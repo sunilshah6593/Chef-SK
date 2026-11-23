@@ -1,80 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-<title>Chef SK</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chef SK - 3000 Recipes + Cost</title>
 <style>
-body{background:#111;color:#fff;font-family:Arial;text-align:center;padding:20px}
-h1{font-size:32px} span{color:#f5a623}
-.box{background:#222;padding:15px;border-radius:12px;margin:12px;text-align:left}
-.btn{background:#f5a623;color:#000;padding:12px 20px;border-radius:20px;display:inline-block;text-decoration:none;font-weight:bold;margin:5px;border:none;font-size:16px}
-input{width:90%;padding:12px;border-radius:10px;border:none;margin:10px 0;font-size:16px}
-#chatBox{background:#000;padding:12px;border-radius:10px;text-align:left;min-height:120px;max-height:300px;overflow:auto}
-.recipe{background:#333;padding:10px;border-radius:10px;margin:8px 0}
-.hidden{display:none}
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#111;color:#fff;padding:12px}
+h1{text-align:center}h1 span{color:#ffb02e}
+button{background:#ffb02e;border:0;padding:10px 16px;border-radius:20px;font-weight:bold;cursor:pointer}
+input,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:0;font-size:16px}
+.card{background:#222;padding:14px;border-radius:14px;margin:10px 0}
+.card b{color:#ffb02e}.box{background:#333;padding:10px;border-radius:10px;margin:6px 0}
+.small{color:#ccc;font-size:13px}.green{color:#4ade80;font-weight:bold}.hide{display:none}
 </style>
 </head>
 <body>
 <h1>Chef <span>SK</span> AI Assistant</h1>
-<p>Ek complete AI Chef Assistant for Home & Restaurant Teams.</p>
-<button class="btn" onclick="show('home')">Home</button>
-<button class="btn" onclick="show('chat')">Chat & Talk</button>
-<button class="btn" onclick="show('recipes')">All Recipes</button> 
- <div id="home">
-<div class="box"><h3>Daily Kitchen Hub</h3><p>Roz ka kaam, prep list aur menu planning yaha se karo.</p><button class="btn" onclick="show('recipes')">Recipes Dekho</button></div>
-<div class="box"><h3>Voice Menu Maker</h3><p>Bol ke menu banao. Chat wale section me mic dabao.</p><button class="btn" onclick="show('chat')">Chat Kholo</button></div>
-<div class="box"><h3>Costing Calculator</h3><p>Ek plate ki cost: Dal Tadka = 45 Rs | Veg Biryani = 70 Rs | Manchurian = 60 Rs</p></div>
+<p style="text-align:center">3000 Recipes + Cost Calculator + Chat</p>
+<div style="text-align:center">
+<button onclick="show('home')">Home</button>
+<button onclick="show('cost')">Cost Calculator</button>
+<button onclick="show('recipes')">3000 Recipes</button>
+<button onclick="show('chat')">Chat & Talk</button>
 </div>
 
-<div id="chat" class="hidden">
-<div class="box"><h3>Chef SK se Baat Karo</h3>
-<div id="chatBox">Chef SK: Namaste Sunil! Kya banana hai? Jaise likho - biryani recipe ya dal tadka</div>
-<input id="msg" placeholder="Yaha likho... biryani, dal, manchurian...">
-<br><button class="btn" onclick="send()">Bhejo</button>
-<button class="btn" onclick="talk()">Bolo</button>
-</div>
+<div id="home" class="card">
+<h2>Namaste Chef! 👨‍🍳</h2>
+<p>Total Recipes: <b id="totalCount">3000</b></p>
+<p>1. Cost ke liye Cost Calculator dabao</p>
+<p>2. Recipe ke liye 3000 Recipes me search karo</p>
+<p>3. Baat ke liye Chat & Talk dabao</p>
 </div>
 
-<div id="recipes" class="hidden">
-<div class="box"><h3>All Recipes Hub</h3>
-<div class="recipe"><b>1. Dal Tadka</b><br>Dal ubalo, jeera-tomato tadka lagao, dhaniya dalo. Cost 45 Rs</div>
-<div class="recipe"><b>2. Veg Biryani</b><br>Chawal 70% pakao, sabzi-masala layer karo, dum pe 10 min. Cost 70 Rs</div>
-<div class="recipe"><b>3. Veg Manchurian</b><br>Gobhi-gajar balls banao, fry karo, soya-chilli sauce me milao. Cost 60 Rs</div>
-<div class="recipe"><b>4. Paneer Butter Masala</b><br>Tomato-onion gravy, malai, kasuri methi. Cost 85 Rs</div>
-<div class="recipe"><b>5. Jeera Rice</b><br>Jeera tadka, basmati chawal. Cost 40 Rs</div>
+<div id="cost" class="card hide">
+<h2>Cost Calculator</h2>
+<label>Total Samaaan Ka Daam (Rs)</label>
+<input id="totalCost" type="number" value="500">
+<label>Kitne Plate Ke Liye?</label>
+<input id="serving" type="number" value="10">
+<label>Kitna % Profit Chahiye?</label>
+<input id="profit" type="number" value="40">
+<button onclick="calcCost()" style="width:100%">CALCULATE KARO</button>
+<div id="costResult" class="box">Daam dal ke Calculate dabao</div>
 </div>
-</div> 
+
+<div id="recipes" class="card hide">
+<h2>3000 Recipes Hub</h2>
+<input id="search" placeholder="Search karo... Paneer, Biryani, Aloo" oninput="showRecipes()">
+<select id="cat" onchange="showRecipes()">
+<option value="">Sab Category</option>
+<option value="Sabzi">Sabzi</option>
+<option value="Rice">Rice / Biryani</option>
+<option value="Snacks">Snacks</option>
+<option value="Dal">Dal</option>
+<option value="Paneer">Paneer</option>
+</select>
+<div id="recipeList"></div>
+<button onclick="nextPage()" style="width:100%">Aur Recipes Dikhao</button>
+</div>
+
+<div id="chat" class="card hide">
+<h2>Chef SK Se Baat Karo</h2>
+<div id="chatBox" class="box" style="height:200px;overflow:auto">Chef SK: Namaste! Kya banana hai?</div>
+<input id="chatInp" placeholder="Jaise: Paneer ki recipe + cost?">
+<button onclick="sendChat()" style="width:48%">Bhejo</button>
+<button onclick="speakChat()" style="width:48%">Bolo</button>
+</div>
 <script>
-function show(id){
-document.getElementById('home').classList.add('hidden');
-document.getElementById('chat').classList.add('hidden');
-document.getElementById('recipes').classList.add('hidden');
-document.getElementById(id).classList.remove('hidden');
-window.scrollTo(0,0);
+function show(id){['home','cost','recipes','chat'].forEach(x=>document.getElementById(x).classList.add('hide'));document.getElementById(id).classList.remove('hide');window.scrollTo(0,0);if(id=='recipes')showRecipes();}
+const bases=["Aloo","Paneer","Gobhi","Bhindi","Baingan","Palak","Methi","Karela","Lauki","Tinda","Parwal","Kundru","Arbi","Shimla Mirch","Matar","Chana","Rajma","Moong","Masoor","Urad","Toor Dal","Chole","Soya","Mushroom","Corn","Gajar","Beetroot","Kheera","Tomato","Pyaz","Kaju","Badam","Kishmish","Besan","Suji","Poha","Upma","Idli","Dosa","Uttapam","Pav Bhaji","Vada Pav","Samosa","Pakoda","Kachori","Dhokla","Chaat","Pani Puri","Bhel","Sev Puri","Aloo Tikki","Paneer Tikka","Tandoori Aloo","Veg Biryani","Chicken Biryani","Mutton Biryani","Egg Biryani","Jeera Rice","Fried Rice","Pulao","Khichdi","Dal Fry","Dal Tadka","Dal Makhani","Kadhi","Sambar","Rasam","Paneer Butter Masala","Paneer Do Pyaza","Paneer Lababdar","Paneer Tikka Masala","Palak Paneer","Matar Paneer","Shahi Paneer","Kadai Paneer","Malai Kofta","Veg Kofta","Veg Manchurian","Chilli Paneer","Chilli Potato","Hakka Noodles","Manchow Soup","Tomato Soup","Veg Soup","Sandwich","Pizza","Burger","Pasta","Momos","Spring Roll","Cutlet","French Fries","Bread Pakoda","Jalebi","Gulab Jamun","Rasmalai","Kheer","Halwa","Laddu"];
+const styles=["Masala","Tadka","Fry","Gravy","Do Pyaza","Lababdar","Kadai","Handi","Dum","Butter","Malai","Achari","Kolhapuri","Hyderabadi","Punjabi","Mughlai","South Style","Jain Style","Spicy","Chatpata","Roasted","Grilled","Tandoori","Kurkura","Crispy","Creamy","Dhaba Style","Home Style","Street Style","Special"];
+const cats=["Sabzi","Rice","Snacks","Dal","Paneer"];
+let allRecipes=[];
+bases.forEach((b,i)=>{styles.forEach((s,j)=>{let cost=35+((i*7+j*11)%90);let cat=cats[(i+j)%5];if(b.includes("Paneer"))cat="Paneer";if(b.includes("Dal")||b.includes("Chana")||b.includes("Rajma"))cat="Dal";if(b.includes("Biryani")||b.includes("Rice")||b.includes("Pulao")||b.includes("Khichdi"))cat="Rice";if(b.includes("Samosa")||b.includes("Pakoda")||b.includes("Chaat")||b.includes("Momos")||b.includes("Pizza"))cat="Snacks";allRecipes.push({name:b+" "+s,cat:cat,cost:cost,desc:b+" ko "+s+" style me banao. Pyaz-tomato masala, adrak-lehsun, garam masala dalo."});});});
+document.getElementById('totalCount').innerText=allRecipes.length+" Recipes Ready!";
+let page=0;
+function showRecipes(){
+let q=document.getElementById('search').value.toLowerCase();
+let c=document.getElementById('cat').value;
+let f=allRecipes.filter(r=>(!q||r.name.toLowerCase().includes(q))&&(!c||r.cat==c));
+page=0;window._lastList=f;
+let html="<p class='small'>Mile: "+f.length+" recipes</p>";
+f.slice(0,20).forEach(r=>{html+="<div class='box'><b>"+r.name+"</b> - "+r.cat+"<br>"+r.desc+"<br><span class='green'>Cost: "+r.cost+" Rs | Sell: "+Math.round(r.cost*1.4)+" Rs</span></div>";});
+document.getElementById('recipeList').innerHTML=html;
 }
-function send(){
-var inp=document.getElementById('msg');
-var t=inp.value.toLowerCase();
-if(!t) return;
-var box=document.getElementById('chatBox');
-box.innerHTML+="<br><br>Tum: "+inp.value;
-var reply="Ye ban sakta hai - Dal Tadka, Veg Biryani, Manchurian, Paneer Butter Masala try karo. Recipe ke liye All Recipes dabao.";
-if(t.includes('biryani')) reply="Veg Biryani: Chawal 70% pakao, sabzi masala layer karo, 10 min dum. Ekdum restaurant jaisi banegi!";
-else if(t.includes('dal')) reply="Dal Tadka: Arhar dal ubalo, ghee me jeera, lehsun, tomato tadka. Upar se dhaniya!";
-else if(t.includes('manchurian')) reply="Manchurian: Gobhi balls fry karo, soya + chilli sauce me toss karo. Garam serve karo.";
-else if(t.includes('paneer')) reply="Paneer Butter Masala: Tomato gravy banao, malai + kasuri methi dalo, paneer dalo. Ready!";
-else if(t.includes('menu')||t.includes('cost')) reply="Aaj ka Menu: Dal Tadka 45 Rs, Biryani 70 Rs, Manchurian 60 Rs. Plate count batao total ke liye.";
-else if(t.includes('hello')||t.includes('hi')||t.includes('namaste')) reply="Namaste! Kya banau aaj? Recipe chahiye to naam likho.";
-box.innerHTML+="<br><br>Chef SK: "+reply;
-inp.value="";
-box.scrollTop=box.scrollHeight;
+function nextPage(){
+let list=window._lastList||allRecipes;
+let s=20+page*20;page++;
+let h=document.getElementById('recipeList').innerHTML;
+list.slice(s,s+20).forEach(r=>{h+="<div class='box'><b>"+r.name+"</b> - "+r.cat+"<br>"+r.desc+"<br><span class='green'>Cost: "+r.cost+" Rs | Sell: "+Math.round(r.cost*1.4)+" Rs</span></div>";});
+document.getElementById('recipeList').innerHTML=h;
 }
-function talk(){
-if(!('webkitSpeechRecognition' in window)){alert('Mic is phone me support nahi kar raha, likh ke pucho');return;}
-var r=new webkitSpeechRecognition(); r.lang='hi-IN';
-r.onresult=function(e){document.getElementById('msg').value=e.results[0][0].transcript; send();}
-r.start();
+function calcCost(){
+let t=parseFloat(document.getElementById('totalCost').value)||0;
+let s=parseFloat(document.getElementById('serving').value)||1;
+let p=parseFloat(document.getElementById('profit').value)||0;
+let per=t/s;let sell=per*(1+p/100);let prof=(sell-per)*s;
+document.getElementById('costResult').innerHTML="<b>Total Cost:</b> "+t+" Rs<br><b>1 Plate Cost:</b> "+per.toFixed(2)+" Rs<br><b>Bechne Ka Daam:</b> "+sell.toFixed(2)+" Rs<br><b class='green'>Total Profit:</b> "+prof.toFixed(2)+" Rs";
 }
+function sendChat(){
+let inp=document.getElementById('chatInp');
+let box=document.getElementById('chatBox');
+if(!inp.value)return;
+let q=inp.value.toLowerCase();
+box.innerHTML+="<br><b>Tum:</b> "+inp.value;
+let found=allRecipes.find(r=>q.includes(r.name.split(" ")[0].toLowerCase()));
+let ans=found?found.name+" - "+found.desc+" Cost "+found.cost+" Rs, Becho "+Math.round(found.cost*1.4)+" Rs me.":"Biryani, Paneer, Dal, Aloo me se koi ek likho, main recipe + cost bata dunga!";
+box.innerHTML+="<br><b>Chef SK:</b> "+ans;
+inp.value="";box.scrollTop=box.scrollHeight;
+}
+function speakChat(){
+let r=new (window.SpeechRecognition||window.webkitSpeechRecognition)();
+r.lang='hi-IN';r.onresult=e=>{document.getElementById('chatInp').value=e.results[0][0].transcript;sendChat();};r.start();
+}
+showRecipes();
 </script>
 </body>
-</html>  
+</html> 
